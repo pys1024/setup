@@ -30,3 +30,12 @@ setup .gitprompt
 
 setup .tmux.conf
 setup tmux.sh
+
+# install source code pro
+$cdir/source-code-pro/install.sh
+# install bat
+# install eza
+# install ripgrep
+# install fd-find
+# install fzf
+# install rustup & cargo
