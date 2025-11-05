@@ -25,6 +25,8 @@ setup .bash_path
 
 setup .inputrc
 setup .vimrc
+setup .fzfrc
+
 setup .gitconfig
 setup .gitprompt
 
@@ -44,6 +46,9 @@ $cdir/source-code-pro/install.sh
 # install fd-find
 #cargo install --locked fd-find
 # ---------------------------------------------------
+
+# install Z
+# git clone https://github.com/rupa/z.git
 
 # install fzf (written in Golang)
 # git clone https://github.com/junegunn/fzf.git

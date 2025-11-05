@@ -1,0 +1,31 @@
+# FZF Settings
+# fd: --hidden --follow --exclude
+# bat: --style=numbers --color=always
+# fzf: --preview 'fzf-preview.sh {}' --height=~40% --layout=reverse --border
+# --tmux center
+export FZF_DEFAULT_COMMAND='fd --strip-cwd-prefix -HL -E .git -tf'
+export FZF_DEFAULT_OPTS="
+    --preview 'fzf-preview.sh {}'
+    --height=~40%
+    --layout=reverse
+    --border
+    --tmux=center,80%,60%
+    --bind 'ctrl-/:change-preview-window(down|hidden|)'
+    --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort'"
+
+export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix -HL -E .git"
+export FZF_CTRL_T_OPTS="
+    --preview 'fzf-preview.sh {}'
+    --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort'"
+
+export FZF_ALT_C_COMMAND='fd --strip-cwd-prefix -HL -E .git -td'
+export FZF_ALT_C_OPTS="
+    --preview 'tree -C {} | head -200'
+    --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort'"
+
+export FZF_CTRL_R_OPTS="
+  --preview 'echo {}'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -selection clipboard)+abort'
+  --color header:italic
+  --header 'Press CTRL-Y to copy command into clipboard'"
+

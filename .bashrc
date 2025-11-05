@@ -111,11 +111,11 @@ source_if_exists ~/.bash_path
 source_if_exists ~/.cargo/env
 # FZF tool
 source_if_exists ~/.fzf.bash
+source_if_exists ~/.fzfrc
 # boot up x-cmd.
 source_if_exists ~/.x-cmd.root/X
 
-# Global environment variables
+# ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn
 export RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
 export ANDROID_NDK_HOME=~/workspace/tools/android-ndk-r27d
-
