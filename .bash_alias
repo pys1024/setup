@@ -30,7 +30,7 @@ alias rgf='rg --files -uuu | rg -i'
 alias rgi='rg -i -uuu'
 alias rgv='rg -vi'
 alias xargs='xargs -i'
-alias fdu='fdfind -up'
+alias fdu='fd -up'
 alias mwatch='watch -g ps oargs= -p'
 export -f psk
 export -f mtime

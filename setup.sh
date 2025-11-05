@@ -33,9 +33,20 @@ setup tmux.sh
 
 # install source code pro
 $cdir/source-code-pro/install.sh
+
+# -------------------- RUST TOOLS --------------------
 # install bat
+#cargo install --locked bat
 # install eza
+#cargo install --locked eza
 # install ripgrep
+#cargo install --locked ripgrep
 # install fd-find
-# install fzf
+#cargo install --locked fd-find
+# ---------------------------------------------------
+
+# install fzf (written in Golang)
+# git clone https://github.com/junegunn/fzf.git
+
 # install rustup & cargo
+#curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

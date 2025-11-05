@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e 
+set -e
 
 cdir=$(cd $(dirname $(realpath $0)); pwd)
 info=$(uname -a)
@@ -7,8 +7,10 @@ info=$(uname -a)
 if [[ $info =~ "Linux" ]]; then
     if [ x"-a" = x"$1" ]; then
         # install for all users
-        sudo cp $cdir/OTF/ /usr/share/fonts/Source-code-pro -rf
-        sudo fc-cache
+        if [ -d "/usr/share/fonts/Source-code-pro" ]; then
+            sudo cp $cdir/OTF/ /usr/share/fonts/Source-code-pro -rf
+            sudo fc-cache
+        fi
     else
         # install for yourself
         mkdir -p ~/.fonts
