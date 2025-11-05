@@ -1,0 +1,28 @@
+
+export JAVA_HOME=~/java/jdk1.8.0_191
+export JRE_HOME=$JAVA_HOME/jre
+export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+
+# paths to prepend to PATH
+tooldir_home=~/bin
+tooldir_homebin=~/bin/bin
+tooldir_java=$JAVA_HOME/bin
+tooldir_jre=$JRE_HOME/bin
+tooldir_nodejs=~/workspace/node-v14.17.3-linux-x64/bin
+
+# paths to append to PATH
+tool_pending_pio=~/.platformio/penv/bin
+
+# append directory in the end
+for dir in ""${!tool_pending_*}""; do
+  # PATH=$(eval echo '$'{$dir}:$PATH)
+  # PATH=${!dir}:$PATH
+  echo $PATH | grep -q -E "(^|:)${!dir}[:$]" || PATH=${PATH}:${!dir}
+done
+
+# insert directory in the begining
+for dir in ""${!tooldir_*}""; do
+  # PATH=$(eval echo '$'{$dir}:$PATH)
+  # PATH=${!dir}:$PATH
+  echo $PATH | grep -q -E "(^|:)${!dir}[:$]" || PATH=${!dir}:$PATH
+done

@@ -1,0 +1,143 @@
+# This function defines a 'cd' replacement function capable of keeping,
+# displaying and accessing history of visited directories, up to 10 entries.
+# To use it, uncomment it, source this file and try 'cd --'.
+# acd_func 1.0.5, 10-nov-2004
+# Petar Marinov, http:/geocities.com/h2428, this is public domain
+cd_func ()
+{
+  local x2 the_new_dir adir index
+  local -i cnt
+
+  if [[ $1 ==  "--" ]]; then
+    dirs -v
+    return 0
+  fi
+
+  the_new_dir=$1
+  [[ -z $1 ]] && the_new_dir=$HOME
+
+  if [[ ${the_new_dir:0:1} == '-' ]]; then
+    #
+    # Extract dir N from dirs
+    index=${the_new_dir:1}
+    [[ -z $index ]] && index=1
+    adir=$(dirs +$index)
+    [[ -z $adir ]] && return 1
+    the_new_dir=$adir
+   fi
+
+  #
+  # '~' has to be substituted by ${HOME}
+  [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
+
+  #
+  # Now change to the new dir and add to the top of the stack
+  pushd "${the_new_dir}" > /dev/null
+  [[ $? -ne 0 ]] && return 1
+  the_new_dir=$(pwd)
+
+  #
+  # Trim down everything beyond 11th entry
+   popd -n +11 2>/dev/null 1>/dev/null
+
+  #
+  # Remove any other occurence of this dir, skipping the top of the stack
+  for ((cnt=1; cnt <= 10; cnt++)); do
+    x2=$(dirs +${cnt} 2>/dev/null)
+    [[ $? -ne 0 ]] && return 0
+    [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
+    if [[ "${x2}" == "${the_new_dir}" ]]; then
+      popd -n +$cnt 2>/dev/null 1>/dev/null
+      cnt=cnt-1
+    fi
+  done
+
+  return 0
+}
+
+ec_func () {
+    emacsclient "$@" &> /dev/null &
+}
+
+bc_func () {
+    bcompare "$@" &> /dev/null &
+}
+
+mtime () {
+    local start_t=$(date +%s)
+    bash -c "$*"
+    local code=$?
+    local end_t=$(date +%s)
+    local elapsed_t=$(date -d @$[$end_t - $start_t - 8*3600] +%T)
+    start_t=$(date -d @${start_t} +"%F %T")
+    end_t=$(date -d @${end_t} +"%F %T")
+    echo
+    [ $code = 0 ] && echo -e "\E[1;32mSUCCESS\E[0m" \
+                          || echo -e "\E[1;31mFAILED\E[0m"
+    echo -e "\E[37mCommand Line: $*\E[0m"
+    echo -e "\E[37mStart   Time: $start_t\E[0m"
+    echo -e "\E[37mEnd     Time: $end_t\E[0m\n"
+    echo -e "\E[1;36mElapsed Time: $elapsed_t\E[0m\n"
+    local info=$(echo -e "$*\n\nStart   Time: $start_t\nEnd     Time: $end_t\nElapsed Time: $elapsed_t")
+    info="$*"
+    notify-send --urgency=critical -i "$([ $code = 0 ] && echo terminal || echo error)" "$info"
+}
+
+psk () {
+    force=false
+    pattern=$1
+    if [ x"$1" = x"-f" ]; then
+        force=true
+        pattern=$2
+    fi
+    num=$(ps -ef | grep -v grep | grep -i "$pattern" | wc -l)
+    if [ $num -eq 0 ]; then
+        echo -e "\033[1;31mNo process matches!\033[0m"
+    elif [ $num -eq 1 ]; then
+        if [ x"$force" = x"true" ]; then
+            ans=y
+        else
+            ps -ef | grep -v grep | grep -i "$pattern"
+            echo
+            read -p "Are you sure to kill the process? [Y/N] " ans
+        fi
+        if [ x"$ans" = x"y" ] || [ x"$ans" = x"Y" ]; then
+            pid=$(ps -ef | grep -v grep | grep -i "$pattern" | awk '{print $2}')
+            pgid=$(ps -efj | grep -v grep | grep -i "$pattern" | awk '{print $4}')
+            #kill $pid
+            kill -- -$pgid
+            num=$(ps -ef | grep -v grep | grep -i "$pattern" | wc -l)
+	    if [ $num -eq 0]; then
+	        echo -e "\033[1;32mProcess($pid) is killed!\033[0m"
+	    else
+	        echo -e "\033[1;33mFailed to kill process!$pid)!\033[0m"
+	    fi
+        fi
+    else
+        echo -e "\033[1;33mMore than one process matches:\033[0m"
+        ps -ef | grep -v grep | grep -i "$pattern"
+    fi
+}
+
+adbs() {
+    if [ -n "$ANDROID_SERIAL" ]; then
+        echo -e "Current device: \E[1;34m$ANDROID_SERIAL\E[0m"
+    fi
+    if [[ $1 =~ ^[0-9]$ ]]; then
+        n=$1
+    else
+        adb devices | grep -v "List of devices" | awk 'NF {print NR, $1}'
+        echo
+        read -p "Choose Once of the Devices Above to Use: " n
+    fi
+    if [[ $n =~ ^[0-9]$ ]]; then
+        serial=$(adb devices | grep -v "List of devices" | awk "NR==$n {print \$1}")
+        if [ -n $serial ]; then
+            echo -e "Device is selected: \E[1;32m$serial\E[0m"
+            export ANDROID_SERIAL=$serial
+        fi
+    else
+        echo -e "Unset device: \E[1;32m$ANDROID_SERIAL\E[0m"
+	unset ANDROID_SERIAL
+    fi
+}
