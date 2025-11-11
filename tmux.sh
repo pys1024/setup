@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if tmux has-session -t pys1024 &> /dev/null; then
+    tmux a -t pys1024
+    exit
+fi
+
 cd
 tmux new-session -d -s pys1024
 tmux rename-window Home

@@ -3,7 +3,16 @@
 	lgga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %Cgreen(%cr) %C(bold blue)<%an>%Creset %n%f%n' --abbrev-commit -5 --all
 	lg = log --graph --decorate --color -5
 	st = status
+	a = add
 	b = branch
+    c = commit
+    d = diff
+    f = fetch
+    i = init
+    p = pull
+    r = rebase
+    s = status
+    t = tag
 	chk = checkout
 [color]
 	status = always
@@ -20,3 +29,5 @@
 	proxy = 127.0.0.1:8118
 [https]
 	proxy = 127.0.0.1:8118
+[pull]
+    rebase = true
