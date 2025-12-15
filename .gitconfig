@@ -9,8 +9,10 @@
     d = diff
     f = fetch
     i = init
+    l = lgg
     p = pull
     r = rebase
+    rs = restore
     s = status
     t = tag
 	chk = checkout

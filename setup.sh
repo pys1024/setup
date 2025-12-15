@@ -33,6 +33,8 @@ setup .gitprompt
 setup .tmux.conf
 setup tmux.sh
 
+setup .cargo/config.toml
+
 # install source code pro
 $cdir/source-code-pro/install.sh
 
@@ -55,3 +57,4 @@ $cdir/source-code-pro/install.sh
 
 # install rustup & cargo
 #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+#curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
