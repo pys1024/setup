@@ -6,6 +6,7 @@ export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
 # paths to prepend to PATH
 tooldir_home=~/bin
 tooldir_homebin=~/bin/bin
+tooldir_local=~/.local/bin
 tooldir_java=$JAVA_HOME/bin
 tooldir_jre=$JRE_HOME/bin
 tooldir_nodejs=~/workspace/node-v14.17.3-linux-x64/bin
