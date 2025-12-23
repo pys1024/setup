@@ -18,7 +18,7 @@ set ts=4
 " hlsearch: highlight search
 set hls
 " ignorecase
-"set ic
+set ic
 " smartcase
 set scs
 " clipboard: sync with system clipboard
