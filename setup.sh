@@ -6,17 +6,30 @@ bakdir=$cdir/bak_$(date +%Y%m%d%H%M%S)
 
 bakup_if_exists() {
     mkdir -p $bakdir
-    if [ -e $1 ]; then
+    if [ -L $1 ] || [ -e $1 ]; then
         mv $1 $bakdir
     fi
 }
 
 setup() {
-    local src=$cdir/$1
-    local dst=$HOME/$1
+    local src=""
+    local dst=""
+
+    if [ $# -eq 1 ]; then
+        src=$cdir/$1
+        dst=$HOME/$1
+    elif [ $# -eq 2 ]; then
+        src=$2
+        dst=$HOME/$1
+    else
+        return
+    fi
+
     bakup_if_exists $dst
     ln -s $src $dst
 }
+
+setup .setup $cdir 
 
 setup .bashrc
 setup .bash_alias
@@ -35,8 +48,8 @@ setup tmux.sh
 
 setup .cargo/config.toml
 
-# install source code pro
-$cdir/source-code-pro/install.sh
+# install nerdfont/source code pro
+$cdir/nerdfont/install.sh
 
 # -------------------- RUST TOOLS --------------------
 # install bat
@@ -58,3 +71,5 @@ $cdir/source-code-pro/install.sh
 # install rustup & cargo
 #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 #curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
+
+# lazygit: https://github.com/jesseduffield/lazygit

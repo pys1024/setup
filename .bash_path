@@ -10,6 +10,7 @@ tooldir_local=~/.local/bin
 tooldir_java=$JAVA_HOME/bin
 tooldir_jre=$JRE_HOME/bin
 tooldir_nodejs=~/workspace/node-v14.17.3-linux-x64/bin
+tooldir_opencode=~/.opencode/bin
 
 # paths to append to PATH
 tool_pending_pio=~/.platformio/penv/bin

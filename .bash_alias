@@ -33,5 +33,7 @@ alias rgv='rg -vi'
 alias xargs='xargs -i'
 alias fdu='fd -up'
 alias mwatch='watch -g ps oargs= -p'
+alias lg='lazygit'
 export -f psk
 export -f mtime
+
