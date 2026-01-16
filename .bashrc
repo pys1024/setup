@@ -114,6 +114,8 @@ source_if_exists ~/.fzf.bash
 source_if_exists ~/.fzfrc
 # boot up x-cmd.
 source_if_exists ~/.x-cmd.root/X
+# homebrew
+[ -e /home/linuxbrew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 
 # ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn

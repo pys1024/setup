@@ -36,7 +36,7 @@ fallback() {
   # <cmd> — <last dir>
   local last_dir
   last_dir="${pane_path##*/}"
-  printf '%s — %s' "$pane_cmd" "$last_dir"
+  printf '%s/ — %s' "$last_dir" "$pane_cmd"
 }
 
 if command -v starship >/dev/null 2>&1; then
