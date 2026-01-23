@@ -88,6 +88,14 @@ source_if_exists() {
     fi
 }
 
+eval_if_exists() {
+    if [ -e "$1" ]; then
+        eval "$($@)"
+    elif command -v "$1" &> /dev/null; then
+        eval "$($@)"
+    fi
+}
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -115,7 +123,11 @@ source_if_exists ~/.fzfrc
 # boot up x-cmd.
 source_if_exists ~/.x-cmd.root/X
 # homebrew
-[ -e /home/linuxbrew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+eval_if_exists /home/linuxbrew/.linuxbrew/bin/brew shellenv bash
+# zoxide
+eval_if_exists zoxide init bash
+# starship
+eval_if_exists starship init bash
 
 # ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn

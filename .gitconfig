@@ -22,14 +22,25 @@
 	branch = always
 	interactive = always
 [core]
-	autocrlf = input
-	editor = vim
+    autocrlf = input
+    editor = vim
+    pager = delta
 [user]
-	name = pengyongsheng
-	email = pengyongsheng@goodix.com
-[http]
-	proxy = 127.0.0.1:8118
-[https]
-	proxy = 127.0.0.1:8118
+    name = pengyongsheng
+    email = pengyongsheng@goodix.com
 [pull]
     rebase = true
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+    line-number = true
+    side-by-side = true
+    syntax-theme = ansi
+[merge]
+    conflictStyle = zdiff3
+[http]
+    proxy = 127.0.0.1:8118
+[https]
+    proxy = 127.0.0.1:8118

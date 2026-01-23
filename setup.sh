@@ -52,14 +52,23 @@ setup .cargo/config.toml
 $cdir/nerdfont/install.sh
 
 # -------------------- RUST TOOLS --------------------
-# install bat
 #cargo install --locked bat
-# install eza
 #cargo install --locked eza
-# install ripgrep
 #cargo install --locked ripgrep
-# install fd-find
 #cargo install --locked fd-find
+#cargo install --locked du-dust
+#cargo install --locked bottom
+#cargo install --locked git-delta
+#cargo install --locked watchexec-cli
+#cargo install --locked hyperfine
+#cargo install --locked starship
+#cargo install --locked tealdeer
+#cargo install --locked hexyl
+#cargo install --locked zoxide
+
+#cargo install --locked procs
+#cargo install --locked just
+#cargo install --locked cargo-edit cargo-watch
 # ---------------------------------------------------
 
 # install Z
@@ -72,4 +81,4 @@ $cdir/nerdfont/install.sh
 #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 #curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
 
-# lazygit: https://github.com/jesseduffield/lazygit
+# lazygit: https://github.com/jesseduffield/lazygit (written in Golang)

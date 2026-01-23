@@ -142,6 +142,9 @@ adbs() {
     fi
 }
 
+if command -v zoxide &> /dev/null; then
+    return
+fi
 #=======================================================================================================================================================
 # Copyright (c) 2009 rupa deadwyler. Licensed under the WTFPL license, Version 2
 

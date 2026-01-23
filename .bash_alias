@@ -34,6 +34,8 @@ alias xargs='xargs -i'
 alias fdu='fd -up'
 alias mwatch='watch -g ps oargs= -p'
 alias lg='lazygit'
+alias we='watchexec'
+
 export -f psk
 export -f mtime
 
