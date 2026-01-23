@@ -124,10 +124,10 @@ source_if_exists ~/.fzfrc
 source_if_exists ~/.x-cmd.root/X
 # homebrew
 eval_if_exists /home/linuxbrew/.linuxbrew/bin/brew shellenv bash
-# zoxide
-eval_if_exists zoxide init bash
 # starship
 eval_if_exists starship init bash
+# zoxide: must behind starship
+eval_if_exists zoxide init bash
 
 # ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn
