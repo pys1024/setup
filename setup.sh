@@ -65,6 +65,7 @@ $cdir/nerdfont/install.sh
 #cargo install --locked tealdeer
 #cargo install --locked hexyl
 #cargo install --locked zoxide
+#cargo install --locked tree-sitter-cli
 
 #cargo install --locked procs
 #cargo install --locked just
