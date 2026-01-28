@@ -127,7 +127,7 @@ eval_if_exists /home/linuxbrew/.linuxbrew/bin/brew shellenv bash
 # starship
 eval_if_exists starship init bash
 # zoxide: must behind starship
-eval_if_exists zoxide init bash
+eval_if_exists zoxide init --cmd cd bash
 
 # ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn
