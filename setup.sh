@@ -1,35 +1,38 @@
 #!/usr/bin/env bash
 set -e
 
-cdir=$(cd $(dirname $(realpath $0)); pwd)
+cdir=$(
+  cd $(dirname $(realpath $0))
+  pwd
+)
 bakdir=$cdir/bak_$(date +%Y%m%d%H%M%S)
 
 bakup_if_exists() {
-    mkdir -p $bakdir
-    if [ -L $1 ] || [ -e $1 ]; then
-        mv $1 $bakdir
-    fi
+  mkdir -p $bakdir
+  if [ -L $1 ] || [ -e $1 ]; then
+    mv $1 $bakdir
+  fi
 }
 
 setup() {
-    local src=""
-    local dst=""
+  local src=""
+  local dst=""
 
-    if [ $# -eq 1 ]; then
-        src=$cdir/$1
-        dst=$HOME/$1
-    elif [ $# -eq 2 ]; then
-        src=$2
-        dst=$HOME/$1
-    else
-        return
-    fi
+  if [ $# -eq 1 ]; then
+    src=$cdir/$1
+    dst=$HOME/$1
+  elif [ $# -eq 2 ]; then
+    src=$2
+    dst=$HOME/$1
+  else
+    return
+  fi
 
-    bakup_if_exists $dst
-    ln -s $src $dst
+  bakup_if_exists $dst
+  ln -s $src $dst
 }
 
-setup .setup $cdir 
+setup .setup $cdir
 
 setup .bashrc
 setup .bash_alias
@@ -67,6 +70,7 @@ $cdir/nerdfont/install.sh
 #cargo install --locked zoxide
 #cargo install --locked tree-sitter-cli
 
+#cargo install --locked jaq
 #cargo install --locked procs
 #cargo install --locked just
 #cargo install --locked cargo-edit cargo-watch
