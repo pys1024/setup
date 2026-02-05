@@ -14,6 +14,7 @@ bakup_if_exists() {
   fi
 }
 
+# dst <- src
 setup() {
   local src=""
   local dst=""
@@ -29,6 +30,8 @@ setup() {
   fi
 
   bakup_if_exists $dst
+  mkdir -p $(dirname $dst)
+  echo "Setup to $dst..."
   ln -s $src $dst
 }
 
@@ -50,6 +53,13 @@ setup .tmux.conf
 setup tmux.sh
 
 setup .cargo/config.toml
+
+setup .config/lazygit
+setup .config/zsh
+setup .config/fish
+setup .config/ranger
+setup .config/neofetch
+setup .config/yazi
 
 # install nerdfont/source code pro
 $cdir/nerdfont/install.sh
