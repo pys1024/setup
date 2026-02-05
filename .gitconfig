@@ -16,6 +16,7 @@
     s = status
     t = tag
 	chk = checkout
+    wt = worktree
 [color]
 	status = always
 	diff = always
