@@ -93,7 +93,9 @@ $cdir/nerdfont/install.sh
 # git clone https://github.com/junegunn/fzf.git
 
 # install rustup & cargo
-#curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-#curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
 
-# lazygit: https://github.com/jesseduffield/lazygit (written in Golang)
+# Lazygit: https://github.com/jesseduffield/lazygit (written in Golang)
+# Ghostty: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
+
