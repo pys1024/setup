@@ -39,6 +39,8 @@
     line-number = true
     side-by-side = true
     syntax-theme = ansi
+[advice]
+    skippedCherryPicks = false
 [merge]
     conflictStyle = zdiff3
 [http]
