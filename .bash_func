@@ -96,6 +96,21 @@ mtime () {
     notify-send --urgency=critical -i "$([ $code = 0 ] && echo terminal || echo error)" "$info"
 }
 
+psg () {
+    pattern=$1
+    num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
+    if [ $num -eq 0 ]; then
+        echo -e "\033[1;31mNo process matches!\033[0m"
+    elif [ $num -eq 1 ]; then
+        pid=$(ps -ef | grep -v grep | grep -Ei "$pattern" | awk '{print $2}')
+        ps -ef | grep -v grep | grep -Ei "$pattern"
+        echo "---------------------------------------------------"
+        pstree -aps $pid
+    else
+        ps -ef | grep -v grep | grep -Ei "$pattern"
+    fi
+}
+
 psk () {
     force=false
     pattern=$1
@@ -103,23 +118,23 @@ psk () {
         force=true
         pattern=$2
     fi
-    num=$(ps -ef | grep -v grep | grep -i "$pattern" | wc -l)
+    num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
     if [ $num -eq 0 ]; then
         echo -e "\033[1;31mNo process matches!\033[0m"
     elif [ $num -eq 1 ]; then
         if [ x"$force" = x"true" ]; then
             ans=y
         else
-            ps -ef | grep -v grep | grep -i "$pattern"
+            ps -ef | grep -v grep | grep -Ei "$pattern"
             echo
             read -p "Are you sure to kill the process? [Y/N] " ans
         fi
         if [ x"$ans" = x"y" ] || [ x"$ans" = x"Y" ]; then
-            pid=$(ps -ef | grep -v grep | grep -i "$pattern" | awk '{print $2}')
-            pgid=$(ps -efj | grep -v grep | grep -i "$pattern" | awk '{print $4}')
+            pid=$(ps -ef | grep -v grep | grep -Ei "$pattern" | awk '{print $2}')
+            pgid=$(ps -efj | grep -v grep | grep -Ei "$pattern" | awk '{print $4}')
             #kill $pid
             kill -- -$pgid
-            num=$(ps -ef | grep -v grep | grep -i "$pattern" | wc -l)
+            num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
 	    if [ $num -eq 0 ]; then
 	        echo -e "\033[1;32mProcess($pid) is killed!\033[0m"
 	    else
@@ -128,7 +143,7 @@ psk () {
         fi
     else
         echo -e "\033[1;33mMore than one process matches:\033[0m"
-        ps -ef | grep -v grep | grep -i "$pattern"
+        ps -ef | grep -v grep | grep -Ei "$pattern"
     fi
 }
 
