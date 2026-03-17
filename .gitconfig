@@ -6,6 +6,8 @@
 	a = add
 	b = branch
     c = commit
+    ca = commit --amend
+    can = commit --amend --no-edit
     d = diff
     f = fetch
     i = init
