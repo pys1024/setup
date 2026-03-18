@@ -1,5 +1,5 @@
 add_newline = false
-scan_timeout = 100
+scan_timeout = 30
 
 # Pane-title friendly: dir + git (branch+status) + venv
 format = "$directory$git_branch$git_status$python"

@@ -60,6 +60,7 @@ setup .config/fish
 setup .config/ranger
 setup .config/neofetch
 setup .config/yazi
+setup .config/starship.toml
 setup .config/starship-tmux.toml
 
 # install nerdfont/source code pro
