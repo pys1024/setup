@@ -122,6 +122,8 @@ source_if_exists ~/.fzf.bash
 source_if_exists ~/.fzfrc
 # boot up x-cmd.
 source_if_exists ~/.x-cmd.root/X
+# west
+source_if_exists ~/west-completion.bash
 # homebrew
 eval_if_exists /home/linuxbrew/.linuxbrew/bin/brew shellenv bash
 # starship
