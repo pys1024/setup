@@ -13,6 +13,8 @@
     i = init
     l = lgg
     p = pull
+    pu = push -u origin main
+    # pu = push origin HEAD:refs/for/master
     r = rebase
     rs = restore
     s = status
