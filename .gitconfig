@@ -16,6 +16,9 @@
     pu = push -u origin main
     # pu = push origin HEAD:refs/for/master
     r = rebase
+    ra = rebase --abort
+    rc = rebase --continue
+    ri = rebase -i
     rs = restore
     s = status
     t = tag
