@@ -6,6 +6,9 @@
 	a = add
 	b = branch
     c = commit
+    cp = cherry-pick
+    cpa = cherry-pick --abort
+    cpc = cherry-pick --continue
     ca = commit --amend
     can = commit --amend --no-edit
     d = diff
@@ -13,8 +16,10 @@
     i = init
     l = lgg
     p = pull
-    pu = push -u origin main
+    # pu = push -u origin main
+    pu = "!f(){ u=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null); if [ -n \"$u\" ]; then r=${u%%/*}; b=${u#*/}; else r=origin; b=$(git symbolic-ref --short -q HEAD) || { echo 'detached HEAD' >&2; exit 1; }; fi; git push -u \"$r\" \"$b\"; }; f"
     # pu = push origin HEAD:refs/for/master
+    # pu = "!f(){ u=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null); if [ -n \"$u\" ]; then r=${u%%/*}; b=${u#*/}; else r=origin; b=$(git symbolic-ref --short -q HEAD) || { echo 'detached HEAD' >&2; exit 1; }; fi; git push \"$r\" HEAD:refs/for/\"$b\"; }; f"
     r = rebase
     ra = rebase --abort
     rc = rebase --continue
