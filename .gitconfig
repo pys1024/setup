@@ -1,10 +1,10 @@
 [alias]
-	lgg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %Cgreen(%cr) %C(bold blue)<%an>%Creset %n%f%n' --abbrev-commit -5
-	lgga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %Cgreen(%cr) %C(bold blue)<%an>%Creset %n%f%n' --abbrev-commit -5 --all
-	lg = log --graph --decorate --color -5
-	st = status
-	a = add
-	b = branch
+    lgg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %Cgreen(%cr) %C(bold blue)<%an>%Creset %n%f%n' --abbrev-commit -5
+    lgga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %Cgreen(%cr) %C(bold blue)<%an>%Creset %n%f%n' --abbrev-commit -5 --all
+    lg = log --graph --decorate --color -5
+    st = status
+    a = add
+    b = branch
     c = commit
     cp = cherry-pick
     cpa = cherry-pick --abort
@@ -27,13 +27,13 @@
     rs = restore
     s = status
     t = tag
-	chk = checkout
+    chk = checkout
     wt = worktree
 [color]
-	status = always
-	diff = always
-	branch = always
-	interactive = always
+    status = always
+    diff = always
+    branch = always
+    interactive = always
 [core]
     autocrlf = input
     editor = vim
