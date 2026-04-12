@@ -26,6 +26,7 @@
     ri = rebase -i
     rs = restore
     s = status
+    sm = submodule
     t = tag
     chk = checkout
     wt = worktree
