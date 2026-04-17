@@ -96,6 +96,44 @@ eval_if_exists() {
     fi
 }
 
+path_has() {
+    local dir="$1"
+
+    case ":$PATH:" in
+        *":$dir:"*) return 0 ;;
+    esac
+
+    return 1
+}
+
+path_append() {
+    local dir
+
+    for dir in "$@"; do
+        [ -n "$dir" ] || continue
+        [ -d "$dir" ] || continue
+        path_has "$dir" || PATH="${PATH:+$PATH:}$dir"
+    done
+}
+
+path_prepend() {
+    local dir
+    local -a dirs=("$@")
+    local i
+
+    for ((i=${#dirs[@]} - 1; i>=0; i--)); do
+        dir="${dirs[i]}"
+        [ -n "$dir" ] || continue
+        [ -d "$dir" ] || continue
+        path_has "$dir" || PATH="$dir${PATH:+:$PATH}"
+    done
+}
+
+add_path() {
+    path_prepend "${PATH_PREPEND_DIRS[@]}"
+    path_append "${PATH_APPEND_DIRS[@]}"
+}
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -112,8 +150,12 @@ fi
 source_if_exists ~/.bash_func
 # Alias definitions.
 source_if_exists ~/.bash_alias
-# Path settings
+# Local path settings, see .bash_path.example for format.
+PATH_PREPEND_DIRS=()
+PATH_APPEND_DIRS=()
 source_if_exists ~/.bash_path
+add_path
+export PATH
 
 # Cargo environment
 source_if_exists ~/.cargo/env
