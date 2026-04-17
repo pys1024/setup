@@ -123,6 +123,83 @@ psg () {
     fi
 }
 
+mnet () {
+    local port="$1"
+    local matches pid_count pid listen_count
+
+    if [[ -z "$port" || ! "$port" =~ ^[0-9]+$ ]]; then
+        echo "Usage: mnet <port>"
+        return 1
+    fi
+
+    if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+        echo -e "\033[1;31mInvalid port: $port\033[0m"
+        return 1
+    fi
+
+    if ! command -v netstat > /dev/null 2>&1; then
+        echo -e "\033[1;31mnetstat is not installed!\033[0m"
+        return 1
+    fi
+
+    matches=$(netstat -tunap 2>/dev/null | awk -v port="$port" '
+        NR > 2 && $4 ~ ("(^|[:.])" port "$")
+    ')
+
+    if [ -z "$matches" ]; then
+        echo -e "\033[1;31mNo socket matches port $port!\033[0m"
+        return 1
+    fi
+
+    printf '%s\n' "$matches"
+
+    pid_count=$(awk '
+        $NF ~ /^[0-9]+\// {
+            split($NF, a, "/")
+            seen[a[1]] = 1
+        }
+        END {
+            for (pid in seen) {
+                count++
+            }
+            print count + 0
+        }
+    ' <<< "$matches")
+
+    if [ "$pid_count" -eq 0 ]; then
+        echo -e "\033[1;33mPID is not visible, try sudo if needed.\033[0m"
+        return 0
+    fi
+
+    if [ "$pid_count" -ne 1 ]; then
+        return 0
+    fi
+
+    pid=$(awk '
+        $NF ~ /^[0-9]+\// {
+            split($NF, a, "/")
+            print a[1]
+            exit
+        }
+    ' <<< "$matches")
+
+    listen_count=$(awk -v pid="$pid" '
+        $1 ~ /^tcp/ && $(NF - 1) == "LISTEN" && $NF ~ ("^" pid "/") {
+            count++
+        }
+        END {
+            print count + 0
+        }
+    ' <<< "$matches")
+
+    if [ "$listen_count" -eq 0 ]; then
+        return 0
+    fi
+
+    echo "---------------------------------------------------"
+    ps -ww -p "$pid" -o user=USER -o pid=PID -o comm=COMMAND -o args=CMDLINE
+}
+
 psk () {
     force=false
     pattern=$1
