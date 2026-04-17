@@ -40,7 +40,6 @@ setup .setup $cdir
 setup .bashrc
 setup .bash_alias
 setup .bash_func
-setup .bash_path
 
 setup .inputrc
 setup .vimrc
