@@ -89,37 +89,118 @@ bc_func () {
 }
 
 mtime () {
-    local start_t=$(date +%s)
-    bash -c "$*"
-    local code=$?
-    local end_t=$(date +%s)
-    local elapsed_t=$(date -d @$[$end_t - $start_t - 8*3600] +%T)
-    start_t=$(date -d @${start_t} +"%F %T")
-    end_t=$(date -d @${end_t} +"%F %T")
+    local start_s end_s elapsed_s elapsed_t
+    local start_t end_t code icon info cmdline
+
+    if [ "$#" -eq 0 ]; then
+        echo "Usage: mtime <command> [args...]"
+        return 1
+    fi
+
+    start_s=$(date +%s)
+    "$@"
+    code=$?
+    end_s=$(date +%s)
+
+    elapsed_s=$((end_s - start_s))
+    elapsed_t=$(printf '%02d:%02d:%02d' \
+        $((elapsed_s / 3600)) \
+        $(((elapsed_s % 3600) / 60)) \
+        $((elapsed_s % 60)))
+    start_t=$(date -d "@$start_s" +"%F %T")
+    end_t=$(date -d "@$end_s" +"%F %T")
+    printf -v cmdline '%q ' "$@"
+    cmdline=${cmdline% }
+
     echo
-    [ $code = 0 ] && echo -e "\E[1;32mSUCCESS\E[0m" \
-                          || echo -e "\E[1;31mFAILED\E[0m"
-    echo -e "\E[37mCommand Line: $*\E[0m"
+    if [ "$code" -eq 0 ]; then
+        echo -e "\E[1;32mSUCCESS\E[0m"
+        icon=terminal
+    else
+        echo -e "\E[1;31mFAILED\E[0m"
+        icon=error
+    fi
+    echo -e "\E[37mCommand Line: $cmdline\E[0m"
     echo -e "\E[37mStart   Time: $start_t\E[0m"
     echo -e "\E[37mEnd     Time: $end_t\E[0m\n"
     echo -e "\E[1;36mElapsed Time: $elapsed_t\E[0m\n"
-    local info=$(echo -e "$*\n\nStart   Time: $start_t\nEnd     Time: $end_t\nElapsed Time: $elapsed_t")
-    info="$*"
-    notify-send --urgency=critical -i "$([ $code = 0 ] && echo terminal || echo error)" "$info"
+
+    info="$cmdline"
+    if command -v notify-send > /dev/null 2>&1; then
+        notify-send --urgency=critical -i "$icon" "$info" > /dev/null 2>&1 || true
+    fi
+
+    return "$code"
+}
+
+_ps_tree_pids () {
+    local pid="$1"
+    local child children
+
+    children=$(pgrep -P "$pid" 2>/dev/null)
+    for child in $children; do
+        _ps_tree_pids "$child"
+    done
+
+    printf '%s\n' "$pid"
+}
+
+_ps_match_lines () {
+    local pattern="$1"
+    local pid="${BASHPID:-$$}"
+    local parent_pid
+    local excluded_pids=" $pid "
+
+    while [ -n "$pid" ] && [ "$pid" -gt 1 ] 2>/dev/null; do
+        parent_pid=$(ps -o ppid= -p "$pid" 2>/dev/null)
+        parent_pid=${parent_pid//[[:space:]]/}
+        [ -z "$parent_pid" ] && break
+        excluded_pids="$excluded_pids$parent_pid "
+        pid="$parent_pid"
+    done
+
+    pgrep -afi -- "$pattern" 2>/dev/null | awk -v excluded_pids="$excluded_pids" '
+        index(excluded_pids, " " $1 " ") == 0
+    '
+}
+
+_ps_pid_alive () {
+    local pid="$1"
+    local stat
+
+    stat=$(ps -o stat= -p "$pid" 2>/dev/null)
+    stat=${stat//[[:space:]]/}
+    [ -n "$stat" ] && [[ ! "$stat" =~ ^Z ]]
 }
 
 psg () {
-    pattern=$1
-    num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
-    if [ $num -eq 0 ]; then
+    local pattern="$1"
+    local matches num pid
+
+    if [ -z "$pattern" ]; then
+        echo "Usage: psg <pattern>"
+        return 1
+    fi
+
+    if ! command -v pgrep > /dev/null 2>&1; then
+        echo -e "\033[1;31mpgrep is not installed!\033[0m"
+        return 1
+    fi
+
+    matches=$(_ps_match_lines "$pattern")
+    num=$(awk 'NF {count++} END {print count + 0}' <<< "$matches")
+
+    if [ "$num" -eq 0 ]; then
         echo -e "\033[1;31mNo process matches!\033[0m"
-    elif [ $num -eq 1 ]; then
-        pid=$(ps -ef | grep -v grep | grep -Ei "$pattern" | awk '{print $2}')
-        ps -ef | grep -v grep | grep -Ei "$pattern"
-        echo "---------------------------------------------------"
-        pstree -aps $pid
+    elif [ "$num" -eq 1 ]; then
+        pid=$(awk 'NF {print $1; exit}' <<< "$matches")
+        printf '%s\n' "$matches"
+        if command -v pstree > /dev/null 2>&1; then
+            echo "---------------------------------------------------"
+            pstree -aps "$pid"
+        fi
     else
-        ps -ef | grep -v grep | grep -Ei "$pattern"
+        printf '%s\n' "$matches"
     fi
 }
 
@@ -201,62 +282,129 @@ mnet () {
 }
 
 psk () {
-    force=false
-    pattern=$1
+    local force=false
+    local pattern="$1"
+    local matches num pid ans pids target_pid alive
+
     if [ x"$1" = x"-f" ]; then
         force=true
         pattern=$2
     fi
-    num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
-    if [ $num -eq 0 ]; then
+
+    if [ -z "$pattern" ]; then
+        echo "Usage: psk [-f] <pattern>"
+        return 1
+    fi
+
+    if ! command -v pgrep > /dev/null 2>&1; then
+        echo -e "\033[1;31mpgrep is not installed!\033[0m"
+        return 1
+    fi
+
+    matches=$(_ps_match_lines "$pattern")
+    num=$(awk 'NF {count++} END {print count + 0}' <<< "$matches")
+
+    if [ "$num" -eq 0 ]; then
         echo -e "\033[1;31mNo process matches!\033[0m"
-    elif [ $num -eq 1 ]; then
+    elif [ "$num" -eq 1 ]; then
+        pid=$(awk 'NF {print $1; exit}' <<< "$matches")
         if [ x"$force" = x"true" ]; then
             ans=y
         else
-            ps -ef | grep -v grep | grep -Ei "$pattern"
+            printf '%s\n' "$matches"
             echo
-            read -p "Are you sure to kill the process? [Y/N] " ans
+            read -p "Are you sure to kill the process and its children? [Y/N] " ans
         fi
         if [ x"$ans" = x"y" ] || [ x"$ans" = x"Y" ]; then
-            pid=$(ps -ef | grep -v grep | grep -Ei "$pattern" | awk '{print $2}')
-            pgid=$(ps -efj | grep -v grep | grep -Ei "$pattern" | awk '{print $4}')
-            #kill $pid
-            kill -- -$pgid
-            num=$(ps -ef | grep -v grep | grep -Ei "$pattern" | wc -l)
-	    if [ $num -eq 0 ]; then
-	        echo -e "\033[1;32mProcess($pid) is killed!\033[0m"
-	    else
-	        echo -e "\033[1;33mFailed to kill process($pid)!\033[0m"
-	    fi
+            pids=$(_ps_tree_pids "$pid")
+            while IFS= read -r target_pid; do
+                [ -n "$target_pid" ] && kill "$target_pid" 2>/dev/null
+            done <<< "$pids"
+
+            alive=false
+            while IFS= read -r target_pid; do
+                if [ -n "$target_pid" ] && _ps_pid_alive "$target_pid"; then
+                    alive=true
+                    break
+                fi
+            done <<< "$pids"
+
+            if [ x"$alive" = x"false" ]; then
+                echo -e "\033[1;32mProcess($pid) and its children are killed!\033[0m"
+            else
+                echo -e "\033[1;33mFailed to kill process($pid) or some children!\033[0m"
+                return 1
+            fi
         fi
     else
         echo -e "\033[1;33mMore than one process matches:\033[0m"
-        ps -ef | grep -v grep | grep -Ei "$pattern"
+        printf '%s\n' "$matches"
     fi
 }
 
 adbs() {
+    local choice="$1"
+    local adb_output devices count serial
+
     if [ -n "$ANDROID_SERIAL" ]; then
         echo -e "Current device: \E[1;34m$ANDROID_SERIAL\E[0m"
     fi
-    if [[ $1 =~ ^[0-9]$ ]]; then
-        n=$1
-    else
-        adb devices | grep -v "List of devices" | awk 'NF {print NR, $1}'
-        echo
-        read -p "Choose Once of the Devices Above to Use: " n
-    fi
-    if [[ $n =~ ^[0-9]$ ]]; then
-        serial=$(adb devices | grep -v "List of devices" | awk "NR==$n {print \$1}")
-        if [ -n $serial ]; then
-            echo -e "Device is selected: \E[1;32m$serial\E[0m"
-            export ANDROID_SERIAL=$serial
-        fi
-    else
+
+    if [ x"$choice" = x"-c" ] || [ x"$choice" = x"clear" ]; then
         echo -e "Unset device: \E[1;32m$ANDROID_SERIAL\E[0m"
-	unset ANDROID_SERIAL
+        unset ANDROID_SERIAL
+        return 0
     fi
+
+    if ! command -v adb > /dev/null 2>&1; then
+        echo -e "\033[1;31madb is not installed!\033[0m"
+        return 1
+    fi
+
+    adb_output=$(adb devices 2>/dev/null)
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;31mFailed to list adb devices!\033[0m"
+        return 1
+    fi
+
+    devices=$(awk '$2 == "device" {print $1}' <<< "$adb_output")
+    count=$(awk 'NF {count++} END {print count + 0}' <<< "$devices")
+    if [ "$count" -eq 0 ]; then
+        echo -e "\033[1;31mNo online adb device found!\033[0m"
+        return 1
+    fi
+
+    if [[ "$choice" =~ ^[0-9]+$ ]]; then
+        :
+    elif [ -n "$choice" ]; then
+        serial=$(awk -v serial="$choice" '$1 == serial {print $1; exit}' <<< "$devices")
+        if [ -z "$serial" ]; then
+            echo -e "\033[1;31mDevice not found: $choice\033[0m"
+            return 1
+        fi
+
+        echo -e "Device is selected: \E[1;32m$serial\E[0m"
+        export ANDROID_SERIAL=$serial
+        return 0
+    else
+        awk 'NF {print ++n, $1}' <<< "$devices"
+        echo
+        read -p "Choose One of the Devices Above to Use: " choice
+    fi
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+        echo -e "\033[1;31mInvalid choice: $choice\033[0m"
+        return 1
+    fi
+
+    serial=$(awk -v n="$choice" 'NF && ++i == n {print $1; exit}' <<< "$devices")
+    if [ -z "$serial" ]; then
+        echo -e "\033[1;31mNo device matches index $choice!\033[0m"
+        return 1
+    fi
+
+    echo -e "Device is selected: \E[1;32m$serial\E[0m"
+    export ANDROID_SERIAL=$serial
 }
 
 if command -v zoxide &> /dev/null; then
