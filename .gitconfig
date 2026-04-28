@@ -15,6 +15,7 @@
     f = fetch
     i = init
     l = lgg
+    la = lgga
     p = pull
     # pu = push -u origin main
     pu = "!f(){ u=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null); if [ -n \"$u\" ]; then r=${u%%/*}; b=${u#*/}; else r=origin; b=$(git symbolic-ref --short -q HEAD) || { echo 'detached HEAD' >&2; exit 1; }; fi; git push -u \"$r\" \"$b\"; }; f"
