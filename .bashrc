@@ -172,8 +172,12 @@ eval_if_exists /home/linuxbrew/.linuxbrew/bin/brew shellenv bash
 eval_if_exists starship init bash
 # zoxide: must behind starship
 eval_if_exists zoxide init --cmd cd bash
+# nvm for nodejs
+source_if_exists ~/.nvm/nvm.sh # This loads nvm
+source_if_exists ~/.nvm/bash_completion # This loads nvm bash_completion
 
 # ------------- Global Environment Variables -------------
 export RUSTUP_DIST_SERVER=https://rsproxy.cn
 export RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
 export ANDROID_NDK_HOME=~/workspace/tools/android-ndk-r27d
+
