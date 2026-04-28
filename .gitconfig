@@ -58,6 +58,7 @@
 [merge]
     conflictStyle = zdiff3
 [http]
+    # sslVerify = false
     proxy = 127.0.0.1:8118
 [https]
     proxy = 127.0.0.1:8118
