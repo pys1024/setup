@@ -205,16 +205,11 @@ psg () {
 }
 
 mnet () {
-    local port="$1"
+    local pattern="$1"
     local matches pid_count pid listen_count
 
-    if [[ -z "$port" || ! "$port" =~ ^[0-9]+$ ]]; then
-        echo "Usage: mnet <port>"
-        return 1
-    fi
-
-    if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
-        echo -e "\033[1;31mInvalid port: $port\033[0m"
+    if [ -z "$pattern" ]; then
+        echo "Usage: mnet <pattern>"
         return 1
     fi
 
@@ -223,12 +218,21 @@ mnet () {
         return 1
     fi
 
-    matches=$(netstat -tunap 2>/dev/null | awk -v port="$port" '
-        NR > 2 && $4 ~ ("(^|[:.])" port "$")
-    ')
+    if [[ "$pattern" =~ ^[0-9]+$ ]]; then
+        if [ "$pattern" -lt 1 ] || [ "$pattern" -gt 65535 ]; then
+            echo -e "\033[1;31mInvalid port: $pattern\033[0m"
+            return 1
+        fi
+
+        matches=$(netstat -tunap 2>/dev/null | awk -v port="$pattern" '
+            NR > 2 && $4 ~ ("(^|[:.])" port "$")
+        ')
+    else
+        matches=$(netstat -tunap 2>/dev/null | awk 'NR > 2' | grep -E -- "$pattern")
+    fi
 
     if [ -z "$matches" ]; then
-        echo -e "\033[1;31mNo socket matches port $port!\033[0m"
+        echo -e "\033[1;31mNo socket matches pattern: $pattern\033[0m"
         return 1
     fi
 
