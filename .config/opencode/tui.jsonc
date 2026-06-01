@@ -3,7 +3,7 @@
   "theme": "opencode",
   "leader_timeout": 2000,
   "keybinds": {
-    "leader": "ctrl+k",
+    "leader": "ctrl+z",
     "command_list": "ctrl+p"
   },
   "scroll_speed": 3,
