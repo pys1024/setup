@@ -53,6 +53,7 @@ setup tmux.sh
 
 setup .cargo/config.toml
 
+setup .config/opencode
 setup .config/lazygit
 setup .config/zsh
 setup .config/fish
