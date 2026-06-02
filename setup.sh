@@ -49,6 +49,20 @@ setup() {
     fi
 }
 
+# Install a tool manually
+if [ "$1" = "lazygit" ]; then
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+    LAZYGIT_ARCH=$(uname -m | sed -e 's/aarch64/arm64/')
+    curl -Lok $cdir/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
+    tar xf $cdir/lazygit.tar.gz $cdir/lazygit
+    install $cdir/lazygit -D -t ~/.local/bin
+    exit
+elif [ "$1" = "fzf" ]; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git $cdir/fzf
+    $cdir/fzf/install
+    exit
+fi
+
 setup .setup $cdir
 
 setup .bashrc
@@ -124,7 +138,8 @@ fi
 
 # -------------------- LAZYGIT ----------------------
 # install fzf (written in Golang)
-# git clone https://github.com/junegunn/fzf.git
+# git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+# ~/.fzf/install
 # ---------------------------------------------------
 if command -v fzf >/dev/null 2>&1; then
     echo -e "${GREEN_C}[SETUP]${WHITE_C}Tool is ready: fzf$NC"
@@ -140,6 +155,11 @@ fi
 # -------------------- LAZYGIT ----------------------
 # install nerdfont/source code pro
 # Lazygit: https://github.com/jesseduffield/lazygit (written in Golang)
+# LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+# LAZYGIT_ARCH=$(uname -m | sed -e 's/aarch64/arm64/')
+# curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
+# tar xf lazygit.tar.gz lazygit
+# sudo install lazygit -D -t /usr/local/bin/
 # ---------------------------------------------------
 if command -v lazygit >/dev/null 2>&1; then
     echo -e "${GREEN_C}[SETUP]${WHITE_C}Tool is ready: lazygit$NC"
