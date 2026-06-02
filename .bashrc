@@ -160,7 +160,7 @@ export PATH
 # Cargo environment
 source_if_exists ~/.cargo/env
 # FZF tool
-source_if_exists ~/.fzf.bash
+eval_if_exists fzf --bash
 source_if_exists ~/.fzfrc
 # boot up x-cmd.
 source_if_exists ~/.x-cmd.root/X
