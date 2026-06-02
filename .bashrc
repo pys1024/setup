@@ -177,7 +177,16 @@ source_if_exists ~/.nvm/nvm.sh # This loads nvm
 source_if_exists ~/.nvm/bash_completion # This loads nvm bash_completion
 
 # ------------- Global Environment Variables -------------
+# RUST mirrors
 export RUSTUP_DIST_SERVER=https://rsproxy.cn
 export RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
+
 export ANDROID_NDK_HOME=~/workspace/tools/android-ndk-r27d
+
+# Homebrew mirrors (USTC)
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles"
+export HOMEBREW_API_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/api"
+export HOMEBREW_CASK_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-cask.git"
 
