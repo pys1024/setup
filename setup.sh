@@ -52,15 +52,23 @@ setup() {
 # Install a tool manually
 manual_tool="${1:-}"
 if [ "$manual_tool" = "lazygit" ]; then
-    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+    echo -e "${GREEN_C}[SETUP]${WHITE_C}Install tool manually: $manual_tool$NC"
+    LAZYGIT_VERSION=$(curl -ks "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
     LAZYGIT_ARCH=$(uname -m | sed -e 's/aarch64/arm64/')
-    curl -Lok $cdir/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
+    curl -kLo $cdir/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
     tar xf $cdir/lazygit.tar.gz $cdir/lazygit
     install $cdir/lazygit -D -t ~/.local/bin
     exit
 elif [ "$manual_tool" = "fzf" ]; then
+    echo -e "${GREEN_C}[SETUP]${WHITE_C}Install tool manually: $manual_tool$NC"
     git clone --depth 1 https://github.com/junegunn/fzf.git $cdir/fzf
     $cdir/fzf/install
+    exit
+elif [ "$manual_tool" = "ghostty" ]; then
+    /bin/bash -c "$(curl -kfsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
+    exit
+elif [ x"$manual_tool" != x"" ]; then
+    echo -e "${GREEN_C}[SETUP]${RED_C}Unsupported tool name: $manual_tool$NC"
     exit
 fi
 
@@ -104,7 +112,7 @@ $cdir/nerdfont/install.sh
 # ---------------------------------------------------
 if ! command -v brew >/dev/null 2>&1; then
     echo -e "${GREEN_C}[SETUP]${CYAN_C}Install homebrew...$NC"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -kfsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # -------------------- RUST TOOLS -------------------
