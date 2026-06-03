@@ -56,7 +56,7 @@ if [ "$manual_tool" = "lazygit" ]; then
     LAZYGIT_VERSION=$(curl -ks "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
     LAZYGIT_ARCH=$(uname -m | sed -e 's/aarch64/arm64/')
     curl -kLo $cdir/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
-    tar xf $cdir/lazygit.tar.gz $cdir/lazygit
+    tar xf $cdir/lazygit.tar.gz -C $cdir lazygit
     install $cdir/lazygit -D -t ~/.local/bin
     exit
 elif [ "$manual_tool" = "fzf" ]; then
