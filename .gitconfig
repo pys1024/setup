@@ -37,6 +37,7 @@
     branch = always
     interactive = always
 [core]
+    ignorecase = false
     autocrlf = input
     editor = vim
     pager = delta

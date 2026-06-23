@@ -1,3 +1,7 @@
 {
+  "plugin": [
+      "oh-my-openagent@latest",
+      "@mohak34/opencode-notifier@latest"
+  ],
   "$schema": "https://opencode.ai/config.json"
 }
