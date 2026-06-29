@@ -1,6 +1,6 @@
 {
   "plugin": [
-      "oh-my-openagent@latest",
+      //"oh-my-openagent@latest",
       "superpowers@git+https://github.com/obra/superpowers.git",
       "@mohak34/opencode-notifier@latest"
   ],
