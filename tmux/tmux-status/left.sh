@@ -72,7 +72,7 @@ while IFS= read -r entry; do
   segment_fg="$inactive_fg"
   trimmed_name=$(trim_label "$name")
   is_current=0
-  if [[ "$session_id" == "$current_session_id" || "$session_id_norm" == "$current_session_id_norm" || "$trimmed_name" == "$current_session_trimmed" ]]; then
+  if [[ "$session_id" == "$current_session_id" || "$trimmed_name" == "$current_session_trimmed" ]]; then
     is_current=1
     segment_bg="$active_bg"
     segment_fg="$active_fg"
