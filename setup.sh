@@ -75,6 +75,7 @@ fi
 setup .setup $cdir
 
 setup .bashrc
+setup .npmrc
 setup .bash_alias
 setup .bash_func
 
