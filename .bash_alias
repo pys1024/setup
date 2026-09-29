@@ -17,7 +17,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
-alias ll='ls -aahl -F=always'
+alias ll='ls -aahlg -F=always'
 alias la='ls -A'
 alias l='ls -F=always'
 
