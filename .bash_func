@@ -411,6 +411,74 @@ adbs() {
     export ANDROID_SERIAL=$serial
 }
 
+_menv_print_vars () {
+    local title="$1"
+    shift
+    [ "$#" -gt 0 ] || return
+
+    local var_name item
+    echo -e "\033[1;36m[$title]\033[0m"
+    for var_name in "$@"; do
+        item=$(declare -p "$var_name" 2>/dev/null) || continue
+        item=${item#declare -}
+        item=${item#* }
+        printf '  %s\n' "$item"
+    done
+}
+
+menv () {
+    local pattern="$1"
+    local name line flags item
+    local -a normal_vars env_vars readonly_vars array_vars func_vars
+
+    if [ -z "$pattern" ]; then
+        echo "Usage: menv <regex>"
+        return 1
+    fi
+
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        case "$name" in
+            pattern|name|line|flags|item|normal_vars|env_vars|readonly_vars|array_vars|func_vars) continue;;
+        esac
+        [[ "$name" =~ $pattern ]] || continue
+
+        line=$(declare -p "$name" 2>/dev/null) || continue
+        flags=${line#declare -}
+        flags=${flags%%[[:space:]]*}
+
+        if [[ "$flags" != *r* && "$flags" != *a* && "$flags" != *A* && "$flags" != *x* ]]; then
+            normal_vars+=("$name")
+        fi
+        [[ "$flags" == *r* ]] && readonly_vars+=("$name")
+        [[ "$flags" == *a* || "$flags" == *A* ]] && array_vars+=("$name")
+        [[ "$flags" == *x* ]] && env_vars+=("$name")
+    done < <(compgen -A variable)
+
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        [[ "$name" =~ $pattern ]] || continue
+        func_vars+=("$name")
+    done < <(compgen -A function)
+
+    if [ "${#normal_vars[@]}" -eq 0 ] && [ "${#env_vars[@]}" -eq 0 ] && \
+       [ "${#readonly_vars[@]}" -eq 0 ] && [ "${#array_vars[@]}" -eq 0 ] && \
+       [ "${#func_vars[@]}" -eq 0 ]; then
+        echo -e "\033[1;31mNo variable or function matches: $pattern\033[0m"
+        return 1
+    fi
+
+    _menv_print_vars "Normal Variables" "${normal_vars[@]}"
+    _menv_print_vars "Environment Variables" "${env_vars[@]}"
+    _menv_print_vars "Readonly Variables" "${readonly_vars[@]}"
+    _menv_print_vars "Array Variables" "${array_vars[@]}"
+
+    if [ "${#func_vars[@]}" -gt 0 ]; then
+        echo -e "\033[1;36m[Functions]\033[0m"
+        printf '  %s\n' "${func_vars[@]}"
+    fi
+}
+
 if command -v zoxide &> /dev/null; then
     return
 fi
