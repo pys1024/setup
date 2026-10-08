@@ -1,8 +1,17 @@
 {
-  "plugin": [
+    "plugin": [
       //"oh-my-openagent@latest",
       "superpowers@git+https://github.com/obra/superpowers.git",
       "@mohak34/opencode-notifier@latest"
-  ],
-  "$schema": "https://opencode.ai/config.json"
+    ],
+    "$schema": "https://opencode.ai/config.json",
+    "mcp": {
+        "email": {
+            "type": "local",
+            "command": ["email-mcp"],
+            "enabled": true,
+            "environment": {
+            }
+        }
+    }
 }
