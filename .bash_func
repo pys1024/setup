@@ -428,7 +428,7 @@ _menv_print_vars () {
 
 menv () {
     local pattern="$1"
-    local name line flags item
+    local name line flags item old_shopt
     local -a normal_vars env_vars readonly_vars array_vars func_vars
 
     if [ -z "$pattern" ]; then
@@ -436,14 +436,24 @@ menv () {
         return 1
     fi
 
+    # Case-insensitive matching (also applies to function names below)
+    old_shopt=$(shopt -p nocasematch 2>/dev/null)
+    shopt -s nocasematch
+
     while IFS= read -r name; do
         [ -n "$name" ] || continue
         case "$name" in
-            pattern|name|line|flags|item|normal_vars|env_vars|readonly_vars|array_vars|func_vars) continue;;
+            pattern|name|line|flags|item|old_shopt|normal_vars|env_vars|readonly_vars|array_vars|func_vars) continue;;
         esac
-        [[ "$name" =~ $pattern ]] || continue
 
         line=$(declare -p "$name" 2>/dev/null) || continue
+        # item is "name=value" (all elements for arrays)
+        item=${line#declare -}
+        item=${item#* }
+
+        # Match against both the variable name and its value
+        [[ "$name" =~ $pattern || "$item" =~ $pattern ]] || continue
+
         flags=${line#declare -}
         flags=${flags%%[[:space:]]*}
 
@@ -460,6 +470,8 @@ menv () {
         [[ "$name" =~ $pattern ]] || continue
         func_vars+=("$name")
     done < <(compgen -A function)
+
+    eval "$old_shopt" 2>/dev/null
 
     if [ "${#normal_vars[@]}" -eq 0 ] && [ "${#env_vars[@]}" -eq 0 ] && \
        [ "${#readonly_vars[@]}" -eq 0 ] && [ "${#array_vars[@]}" -eq 0 ] && \
