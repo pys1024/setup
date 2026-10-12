@@ -17,8 +17,8 @@
     can = commit --amend --no-edit
     d = diff
     f = fetch
-    fp = format-patch
-    fps = format-patch --stdout
+    fp = format-patch --binary
+    fps = format-patch --binary --stdout
     i = init
     l = lgg
     la = lgga
