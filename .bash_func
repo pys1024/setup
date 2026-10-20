@@ -285,18 +285,88 @@ mnet () {
     ps -ww -p "$pid" -o user=USER -o pid=PID -o comm=COMMAND -o args=CMDLINE
 }
 
-psk () {
-    local force=false
-    local pattern="$1"
-    local matches num pid ans pids target_pid alive
+_psk_kill () {
+    local pid="$1"
+    local signal="$2"
+    local timeout="${PSK_KILL_TIMEOUT:-5}"
+    local pids target_pid alive
+    local -i elapsed=0 deadline_ms
 
-    if [ x"$1" = x"-f" ]; then
-        force=true
-        pattern=$2
+    pids=$(_ps_tree_pids "$pid")
+    while IFS= read -r target_pid; do
+        [ -n "$target_pid" ] || continue
+        if [ -n "$signal" ]; then
+            kill -"$signal" "$target_pid" 2>/dev/null
+        else
+            kill "$target_pid" 2>/dev/null
+        fi
+    done <<< "$pids"
+
+    # signal 0 only probes existence, nothing will be terminated
+    if [ x"$signal" = x"0" ]; then
+        if _ps_pid_alive "$pid"; then
+            echo -e "\033[1;32mProcess($pid) is alive.\033[0m"
+        else
+            echo -e "\033[1;33mProcess($pid) is not alive.\033[0m"
+        fi
+        return 0
     fi
 
+    # a process may need time to finish up before it actually exits, so
+    # keep polling until the whole tree is gone or the timeout is reached
+    deadline_ms=$((timeout * 1000))
+    alive=true
+    while [ "$elapsed" -lt "$deadline_ms" ]; do
+        alive=false
+        while IFS= read -r target_pid; do
+            if [ -n "$target_pid" ] && _ps_pid_alive "$target_pid"; then
+                alive=true
+                break
+            fi
+        done <<< "$pids"
+        [ x"$alive" = x"false" ] && break
+        sleep 0.1
+        elapsed=$((elapsed + 100))
+    done
+
+    if [ x"$alive" = x"false" ]; then
+        echo -e "\033[1;32mProcess($pid) and its children are killed!\033[0m"
+        return 0
+    fi
+
+    echo -e "\033[1;33mFailed to kill process($pid) or some children (still alive after ${timeout}s)!\033[0m"
+    return 1
+}
+
+psk () {
+    local force=false all=false signal=""
+    local pattern="" arg matches num pid ans line
+
+    while [ "$#" -gt 0 ]; do
+        arg="$1"
+        case "$arg" in
+            -f) force=true; shift;;
+            -a) all=true; shift;;
+            -*)
+                if [[ "$arg" =~ ^-[0-9]+$ ]]; then
+                    signal="${arg#-}"
+                    shift
+                else
+                    echo -e "\033[1;31mUnknown option: $arg\033[0m"
+                    echo "Usage: psk [-a] [-f] [-0..-9] <pattern>"
+                    return 1
+                fi
+                ;;
+            *)
+                pattern="$arg"
+                shift
+                break
+                ;;
+        esac
+    done
+
     if [ -z "$pattern" ]; then
-        echo "Usage: psk [-f] <pattern>"
+        echo "Usage: psk [-a] [-f] [-0..-9] <pattern>"
         return 1
     fi
 
@@ -310,40 +380,39 @@ psk () {
 
     if [ "$num" -eq 0 ]; then
         echo -e "\033[1;31mNo process matches!\033[0m"
-    elif [ "$num" -eq 1 ]; then
-        pid=$(awk 'NF {print $1; exit}' <<< "$matches")
-        if [ x"$force" = x"true" ]; then
-            ans=y
-        else
-            printf '%s\n' "$matches"
-            echo
-            read -p "Are you sure to kill the process and its children? [Y/N] " ans
-        fi
-        if [ x"$ans" = x"y" ] || [ x"$ans" = x"Y" ]; then
-            pids=$(_ps_tree_pids "$pid")
-            while IFS= read -r target_pid; do
-                [ -n "$target_pid" ] && kill "$target_pid" 2>/dev/null
-            done <<< "$pids"
-
-            alive=false
-            while IFS= read -r target_pid; do
-                if [ -n "$target_pid" ] && _ps_pid_alive "$target_pid"; then
-                    alive=true
-                    break
-                fi
-            done <<< "$pids"
-
-            if [ x"$alive" = x"false" ]; then
-                echo -e "\033[1;32mProcess($pid) and its children are killed!\033[0m"
-            else
-                echo -e "\033[1;33mFailed to kill process($pid) or some children!\033[0m"
-                return 1
-            fi
-        fi
-    else
-        echo -e "\033[1;33mMore than one process matches:\033[0m"
-        printf '%s\n' "$matches"
+        return 1
     fi
+
+    if [ x"$all" = x"true" ] && [ x"$force" = x"true" ]; then
+        while IFS= read -r line <&3; do
+            [ -n "$line" ] || continue
+            pid=${line%%[[:space:]]*}
+            _psk_kill "$pid" "$signal"
+        done 3<<< "$matches"
+        return 0
+    fi
+
+    if [ x"$force" = x"true" ]; then
+        if [ "$num" -eq 1 ]; then
+            pid=$(awk 'NF {print $1; exit}' <<< "$matches")
+            _psk_kill "$pid" "$signal"
+            return $?
+        fi
+
+        echo -e "\033[1;33mMore than one process matches, nothing done:\033[0m"
+        printf '%s\n' "$matches"
+        return 1
+    fi
+
+    while IFS= read -r line <&3; do
+        [ -n "$line" ] || continue
+        pid=${line%%[[:space:]]*}
+        printf '%s\n' "$line"
+        read -p "Kill process $pid and its children? [Y/N] " ans
+        case "$ans" in
+            y|Y) _psk_kill "$pid" "$signal";;
+        esac
+    done 3<<< "$matches"
 }
 
 adbs() {

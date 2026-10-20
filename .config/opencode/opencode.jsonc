@@ -1,25 +1,38 @@
 {
-    "plugin": [
+    "plugins": [
       //"oh-my-openagent@latest",
       "superpowers@git+https://github.com/obra/superpowers.git",
       "@mohak34/opencode-notifier@latest"
     ],
+
     "$schema": "https://opencode.ai/config.json",
 
+    "permissions": [
+        { "action": "external_directory", "resource": "*", "effect": "ask" }
+    ],
+
     "mcp": {
-        "email": {
-            "type": "local",
-            "command": ["email-mcp"],
-            "enabled": true,
-            "environment": {
+        "servers": {
+            "remote-email": {
+                "type": "remote",
+                "url": "http://127.0.0.1:4090/mcp",
+                "disabled": true
+            },
+            "local-email": {
+                "type": "local",
+                "command": ["email-mcp"],
+                "environment": {
+                },
+                "disabled": true
             }
         }
     },
-    "provider": {
+
+    "providers": {
         "segate": {
-            "npm": "@ai-sdk/openai-compatible",
+            "package": "aisdk:@ai-sdk/openai-compatible",
             "name": "SEGate",
-            "options": {
+            "settings": {
                 "baseURL": "http://127.0.0.1:4080/v1",
                 "apiKey": "sk-1234"
             },
@@ -33,6 +46,13 @@
                 },
                 "deepseek-v4-pro": {
                     "name": "DeepSeek-V4-Pro",
+                    "limit": {
+                        "context": 1000000,
+                        "output": 16384
+                    }
+                },
+                "models-gemini-3.8-flash": {
+                    "name": "Gemini-3.8-flash",
                     "limit": {
                         "context": 1000000,
                         "output": 16384

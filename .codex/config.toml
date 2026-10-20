@@ -1,0 +1,96 @@
+personality = "pragmatic"
+model_provider = "segate"
+model_reasoning_effort = "medium"
+approval_policy = { granular = { sandbox_approval = false, rules = false, mcp_elicitations = false, request_permissions = false, skill_approval = false } }
+sandbox_mode = "danger-full-access"
+model = "models-gemini-3.8-flash"
+model_catalog_json = "/home/pys1024/.codex/models.json"
+
+[model_providers]
+
+[model_providers.segate]
+name = "segate"
+base_url = "http://127.0.0.1:4080/v1"
+wire_api = "responses"
+requires_openai_auth = true
+
+[model_providers.deepseek]
+name = "deepseek"
+base_url = "https://api.deepseek.com"
+wire_api = "responses"
+env_key = "DEEPSEEK_API_KEY"
+
+[model_providers.google]
+name = "google"
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+wire_api = "responses"
+env_key = "GOOGLE_API_KEY"
+
+[projects]
+
+[projects."/home/pys1024"]
+trust_level = "trusted"
+
+[projects."/home/pys1024/workspace/git-repo/setup"]
+trust_level = "trusted"
+
+[projects."/home/pys1024/workspace/GoodixKey/segate-node-1.0"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "context-remaining", "used-tokens", "run-state", "permissions", "approval-mode", "codex-version"]
+screen_reader_detection_done = true
+pet = "codex"
+status_line_use_colors = true
+
+[tui.model_availability_nux]
+"gpt-5.6-sol" = 4
+"gpt-6.1-sol" = 4
+
+[plugins]
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[notice]
+
+[notice.model_migrations]
+"gpt-5.4" = "gpt-5.6-terra"
+
+[mcp_servers]
+
+[mcp_servers.email]
+url = "http://127.0.0.1:4090/mcp"
+startup_timeout_ms = 30000
+tool_timeout_sec = 180
+default_tools_approval_mode = "approve"
+
+[mcp_servers.cua_repl]
+command = "/usr/lib/chatgpt/ChatGPT"
+enabled = false
+
+[desktop]
+followUpQueueMode = "steer"
+conversationDetailMode = "STEPS_COMMANDS"
+ambient-suggestions-enabled = true
+show-context-window-usage = true
+localeOverride = "zh-CN"
+browser-show-full-url = true
+selected-avatar-id = "codex"
+
+[marketplaces]
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/home/pys1024/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[features]
+local_thread_store_compression = false
+api_key_model_discovery = false
+daemon_auto_start = false

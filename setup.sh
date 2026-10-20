@@ -91,7 +91,11 @@ setup tmux.sh
 
 setup .cargo/config.toml
 
+setup .codex/config.toml
+setup .codex/auth.json
+
 setup .config/opencode
+setup .config/ghostty
 setup .config/lazygit
 setup .config/zsh
 setup .config/fish

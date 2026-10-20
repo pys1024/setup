@@ -1,25 +1,58 @@
 ---
 description: 根据 HEAD 当前提交的真实改动更新提交记录，仅用于 amend 提交说明并保留 Change-Id 等 trailer
 mode: subagent
-permission:
-  read: allow
-  glob: allow
-  grep: allow
-  bash:
-    "*": deny
-    "git log -1 --format=%B HEAD": allow
-    "git show --stat --summary --find-renames --format=medium HEAD": allow
-    "git show --find-renames --format=medium HEAD --*": allow
-    "git show --find-renames --format= HEAD --*": allow
-    "git show --find-renames --format=medium --* HEAD": allow
-    "git show HEAD --*": allow
-    "git status": allow
-    "git status --short": allow
-    "git stash": ask
-    "git stash push *": ask
-    "git rev-list --parents -n 1 HEAD": allow
-    "git commit --amend --only -m *": ask
-    "git commit --amend --only -F *": ask
+permissions:
+  - action: read
+    resource: "*"
+    effect: allow
+  - action: glob
+    resource: "*"
+    effect: allow
+  - action: grep
+    resource: "*"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git log -1 --format=%B HEAD"
+    effect: allow
+  - action: shell
+    resource: "git show --stat --summary --find-renames --format=medium HEAD"
+    effect: allow
+  - action: shell
+    resource: "git show --find-renames --format=medium HEAD --*"
+    effect: allow
+  - action: shell
+    resource: "git show --find-renames --format= HEAD --*"
+    effect: allow
+  - action: shell
+    resource: "git show --find-renames --format=medium --* HEAD"
+    effect: allow
+  - action: shell
+    resource: "git show HEAD --*"
+    effect: allow
+  - action: shell
+    resource: "git status"
+    effect: allow
+  - action: shell
+    resource: "git status --short"
+    effect: allow
+  - action: shell
+    resource: "git stash"
+    effect: ask
+  - action: shell
+    resource: "git stash push *"
+    effect: ask
+  - action: shell
+    resource: "git rev-list --parents -n 1 HEAD"
+    effect: allow
+  - action: shell
+    resource: "git commit --amend --only -m *"
+    effect: ask
+  - action: shell
+    resource: "git commit --amend --only -F *"
+    effect: ask
 ---
 你是一个只负责“更新 HEAD 当前提交记录”的提交说明整理 agent。
 

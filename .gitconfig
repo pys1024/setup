@@ -69,3 +69,5 @@
     proxy = 127.0.0.1:8118
 [https]
     proxy = 127.0.0.1:8118
+[init]
+    defaultBranch = main
