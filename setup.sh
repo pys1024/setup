@@ -94,6 +94,7 @@ setup .cargo/config.toml
 setup .codex/config.toml
 setup .codex/auth.json
 
+setup .config/pip
 setup .config/opencode
 setup .config/ghostty
 setup .config/lazygit
