@@ -35,6 +35,7 @@ alias mwatch='watch -g ps oargs= -p'
 alias lg='lazygit'
 alias we='watchexec --ignore-nothing'
 
+alias venv='source ~/.venv/bin/activate'
 alias oc='opencode'
 
 export -f psg
