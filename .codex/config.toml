@@ -20,6 +20,12 @@ base_url = "https://api.deepseek.com"
 wire_api = "responses"
 env_key = "DEEPSEEK_API_KEY"
 
+[model_providers.opencode]
+name = "opencode"
+base_url = "https://opencode.ai/openai/v1"
+wire_api = "responses"
+env_key = "OPENCODE_API_KEY"
+
 [model_providers.google]
 name = "google"
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -35,6 +41,9 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/pys1024/workspace/GoodixKey/segate-node-1.0"]
+trust_level = "trusted"
+
+[projects."/home/pys1024/tmp"]
 trust_level = "trusted"
 
 [tui]
